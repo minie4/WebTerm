@@ -70,6 +70,21 @@ function onConsoleOutput(char) {
 var debugcnt = 0;
 var debugword = "+++debug+++"
 function onConsoleInput(key) {
+    // If key is Strg+V
+    if((key.domEvent.key == "v") && key.domEvent.altKey && key.domEvent.ctrlKey) {
+        debug("paste")
+        navigator.clipboard.readText().then((text) => {
+            emulator.serial0_send(text)
+        })
+        return;
+    }
+
+    if((key.domEvent.key == "c") && key.domEvent.altKey && key.domEvent.ctrlKey) {
+        debug("copy")
+        document.execCommand("copy")
+        return;
+    }
+
     // Send keys from xterm to v86
     emulator.serial0_send(key.key)
 
@@ -82,7 +97,7 @@ function onConsoleInput(key) {
     if(debugcnt == debugword.length) {
         document.getElementById("screen").classList.toggle("visible"); 
     }
-    console.log(debugcnt)
+    debug("debugcnt "+debugcnt)
 }
 
 var previous_line = "";
@@ -99,3 +114,7 @@ function onConsoleLine(line) {
 window.addEventListener("resize", () => {
     termfit.fit()
 })
+
+function debug(text) {
+    console.debug("DEBUG: "+text)
+}

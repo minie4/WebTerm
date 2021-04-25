@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Debug
     var v86_display = undefined;
     if(window.location.hash == "#debug") {
-        v86_display = document.getElementById("screen");
+        document.getElementById("screen").classList.add("visible");
     }
 
     // Initialize the v86 emulator
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         wasm_path: "assets/v86.wasm",
         memory_size: 512 * 1024 * 1024,
         vga_memory_size: 100 * 1024 * 1024,
-        screen_container: v86_display,
+        screen_container: document.getElementById("screen"),
         bios: {
             url: "images/seabios.bin",
         },
@@ -67,9 +67,22 @@ function onConsoleOutput(char) {
     }
 }
 
+var debugcnt = 0;
+var debugword = "+++debug+++"
 function onConsoleInput(key) {
     // Send keys from xterm to v86
     emulator.serial0_send(key.key)
+
+    // Listen for the debug key combination
+    if(key.key == debugword[debugcnt]) {
+        debugcnt++;
+    } else {
+        debugcnt = 0;
+    }
+    if(debugcnt == debugword.length) {
+        document.getElementById("screen").classList.toggle("visible"); 
+    }
+    console.log(debugcnt)
 }
 
 var previous_line = "";

@@ -13,3 +13,12 @@ body {
 .xterm-viewport {
     overflow-y: hidden !important;
 }
+
+/* Hide the screen by default */
+#screen {
+    display: none;
+}
+
+#screen.visible {
+    display: block;
+}

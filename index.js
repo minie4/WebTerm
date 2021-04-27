@@ -4,6 +4,15 @@ var emulator;
 
 var booted = false;
 
+// Login as root
+const username = "root";
+
+// Start a shell on /dev/console for debugging,
+// set the TERM variable to a colored terminal,
+// fix enter key on some applications
+// and resize commands and execute the welcome script
+const welcomecmd = 'screen -d -m sh -c "sh </dev/console >/dev/console 2>&1;read";TERM="xterm-256color";stty sane;/etc/init.d/S99welcome';
+
 document.addEventListener("DOMContentLoaded", () => {
     // Debug
     var v86_display = undefined;
@@ -61,8 +70,9 @@ function onConsoleOutput(char) {
     }
     // If the char is the shell prompt after the login message start
     // the welcome script and set bootet to true
-    if(char == "#" && previous_line.includes("buildroot login: root")) {
-        emulator.serial0_send("/etc/init.d/S99welcome\n")
+    if(char == "#" && previous_line.includes("buildroot login: "+username)) {
+        emulator.serial0_send(welcomecmd+"\n")
+        resize();
         booted = true;
     }
 }
@@ -104,7 +114,7 @@ var previous_line = "";
 function onConsoleLine(line) {
     // Enter username on the login prompt
     if (line.startsWith("Welcome to WebTerm")) {
-        emulator.serial0_send("root\n")
+        emulator.serial0_send(username+"\n")
     }
     // Save the line
     previous_line = line;

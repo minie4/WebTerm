@@ -14,7 +14,7 @@ const username = "root";
 const welcomecmd = 'screen -d -m sh -c "sh </dev/console >/dev/console 2>&1;read";TERM="xterm-256color";stty sane;/etc/init.d/S99welcome';
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Debug
+    // Show the internal screen if "#debug" is appended to the url
     var v86_display = undefined;
     if(window.location.hash == "#debug") {
         document.getElementById("screen").classList.add("visible");
@@ -44,10 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     termcontainer = document.getElementById('terminal');
     term.open(termcontainer);
-    // Fit xterm to the size of the container
+
+    // Initialize the xterm-fit addon
     termfit = new FitAddon.FitAddon();
     term.loadAddon(termfit);
-    termfit.fit()    
+    termfit.fit();
+
     // Write a "Booting WebTerm ..." message
     term.write('\033[1;34mDownloading\033[0m OS images ...\r\n')
 
@@ -80,7 +82,7 @@ function onConsoleOutput(char) {
 var debugcnt = 0;
 var debugword = "+++debug+++"
 function onConsoleInput(key) {
-    // If key is Strg+V
+    // Paste (Strg+Alt+V)
     if((key.domEvent.key == "v") && key.domEvent.altKey && key.domEvent.ctrlKey) {
         debug("paste")
         navigator.clipboard.readText().then((text) => {
@@ -89,6 +91,7 @@ function onConsoleInput(key) {
         return;
     }
 
+    // Copy (Strg+Alt+C)
     if((key.domEvent.key == "c") && key.domEvent.altKey && key.domEvent.ctrlKey) {
         debug("copy")
         document.execCommand("copy")

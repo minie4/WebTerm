@@ -110,10 +110,18 @@ function onConsoleLine(line) {
     previous_line = line;
 }
 
-// Fit xterm to the container on window resize
+// Resize the terminal
 window.addEventListener("resize", () => {
-    termfit.fit()
+    resize();
 })
+
+function resize() {
+    // Resize the terminal
+    termfit.fit();
+
+    // Send tty resize over /dev/console so that the user can't see it
+    emulator.keyboard_send_text(`stty cols ${term.cols} rows ${term.rows} -F /dev/ttyS0\n`)
+}
 
 function debug(text) {
     console.debug("DEBUG: "+text)
